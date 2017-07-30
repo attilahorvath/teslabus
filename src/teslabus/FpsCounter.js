@@ -17,7 +17,11 @@ export default class FpsCounter {
   }
 
   draw(context) {
+    context.font = '14px sans-serif';
+    context.textAlign = 'left';
+    context.fillStyle = 'black';
+    context.fillText(`FPS: ${this.fps}`, 570, 20);
     context.fillStyle = 'white';
-    context.fillText(`FPS: ${this.fps}`, 10, 10);
+    context.fillText(`FPS: ${this.fps}`, 571, 21);
   }
 }

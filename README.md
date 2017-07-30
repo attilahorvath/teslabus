@@ -1,6 +1,6 @@
-# teslabus
+# Teslabus
 Drive an electric bus as far as you can!
 
-My entry for Ludum Dare 39.
+My entry for [Ludum Dare 39](https://ldjam.com/).
 
 [Play it here](https://cdn.rawgit.com/attilahorvath/teslabus/master/teslabus.html)
