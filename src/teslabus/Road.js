@@ -1,3 +1,5 @@
+import getImage from './getImage';
+
 export default class Road {
   constructor(y, color) {
     this.y = y;
@@ -13,7 +15,13 @@ export default class Road {
   }
 
   draw(context) {
-    context.fillStyle = this.color;
-    context.fillRect(0, this.y, 640, 160);
+    let image = getImage('images/road.png');
+
+    if (image) {
+      context.drawImage(image, 0, this.y);
+    } else {
+      context.fillStyle = this.color;
+      context.fillRect(0, this.y, 640, 160);
+    }
   }
 }

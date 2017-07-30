@@ -1,4 +1,5 @@
 import Particle from './Particle';
+import getImage from './getImage';
 
 export default class Battery {
   constructor() {
@@ -26,8 +27,14 @@ export default class Battery {
   }
 
   draw(context) {
-    context.fillStyle = 'green';
-    context.fillRect(this.x, this.y, 40, 30);
+    let image = getImage('images/battery.png');
+
+    if (image) {
+      context.drawImage(image, this.x, this.y);
+    } else {
+      context.fillStyle = 'green';
+      context.fillRect(this.x, this.y, 40, 30);
+    }
   }
 
   drawParticles(context) {
@@ -39,11 +46,11 @@ export default class Battery {
   respawn(emit = false) {
     if (emit) {
       for (let particle of this.particles) {
-        particle.respawn(this.x + 20, this.y + 15, 'green');
+        particle.respawn(this.x + 20, this.y + 15, 'lime');
       }
     }
 
-    this.x = 50 + Math.random() * 510;
+    this.x = 90 + Math.floor(Math.random() * 5) * 105;
     this.y = -100 - Math.random() * 5000;
   }
 }

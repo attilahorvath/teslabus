@@ -1,4 +1,5 @@
 import Particle from './Particle';
+import getImage from './getImage';
 
 export default class Obstacle {
   constructor() {
@@ -26,24 +27,30 @@ export default class Obstacle {
   }
 
   draw(context) {
-    switch (this.type) {
-    case 'slowdown':
-      context.fillStyle = 'red';
-      break;
-    case 'speedup':
-      context.fillStyle = 'white';
-      break;
-    case 'freeze':
-      context.fillStyle = 'lightblue';
-      break;
-    case 'drain':
-      context.fillStyle = 'yellow';
-      break;
-    case 'energy':
-      context.fillStyle = 'blue';
-      break;
+    let image = getImage(`images/${this.type}.png`);
+
+    if (image) {
+      context.drawImage(image, this.x, this.y);
+    } else {
+      switch (this.type) {
+      case 'slowdown':
+        context.fillStyle = 'red';
+        break;
+      case 'speedup':
+        context.fillStyle = 'white';
+        break;
+      case 'freeze':
+        context.fillStyle = 'lightblue';
+        break;
+      case 'drain':
+        context.fillStyle = 'yellow';
+        break;
+      case 'energy':
+        context.fillStyle = 'blue';
+        break;
+      }
+      context.fillRect(this.x, this.y, 30, 30);
     }
-    context.fillRect(this.x, this.y, 30, 30);
   }
 
   drawParticles(context) {
@@ -79,7 +86,7 @@ export default class Obstacle {
       }
     }
 
-    this.x = 50 + Math.random() * 510;
+    this.x = 95 + Math.floor(Math.random() * 5) * 105;
     this.y = -100 - Math.random() * 5000;
 
     let type = Math.random();

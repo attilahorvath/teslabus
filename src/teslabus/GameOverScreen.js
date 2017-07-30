@@ -25,9 +25,13 @@ export default class GameOverScreen {
 
     context.font = '32px sans-serif';
     context.fillStyle = 'black';
-    context.fillText(`You drove for ${Math.floor(this.distance)}!`, 322, 202);
+    context.fillText(
+      `You drove for ${Math.floor(this.distance)} meters!`, 322, 202
+    );
     context.fillStyle = 'yellow';
-    context.fillText(`You drove for ${Math.floor(this.distance)}!`, 320, 200);
+    context.fillText(
+      `You drove for ${Math.floor(this.distance)} meters!`, 320, 200
+    );
 
     context.fillStyle = 'black';
     context.fillText('Press [Space] to try again.', 320, 370);

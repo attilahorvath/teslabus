@@ -1,5 +1,6 @@
-import intersect from './intersect';
 import Particle from './Particle';
+import getImage from './getImage';
+import intersect from './intersect';
 
 export default class Bus {
   constructor() {
@@ -19,11 +20,11 @@ export default class Bus {
       this.freezeTimer = 0;
 
       if (game.leftDown) {
-        this.x -= elapsed * 0.5;
+        this.x -= elapsed * 0.5 * this.speed;
       }
 
       if (game.rightDown) {
-        this.x += elapsed * 0.5;
+        this.x += elapsed * 0.5 * this.speed;
       }
     }
 
@@ -111,11 +112,23 @@ export default class Bus {
   }
 
   draw(context) {
-    context.fillStyle = 'blue';
+    let image;
+
     if (this.freezeTimer > 0) {
-      context.fillStyle = 'lightblue';
+      image = getImage('images/frozenBus.png');
+    } else {
+      image = getImage('images/bus.png');
     }
-    context.fillRect(this.x + this.ox, this.y, 50, 130);
+
+    if (image) {
+      context.drawImage(image, this.x, this.y);
+    } else {
+      context.fillStyle = 'blue';
+      if (this.freezeTimer > 0) {
+        context.fillStyle = 'lightblue';
+      }
+      context.fillRect(this.x + this.ox, this.y, 50, 130);
+    }
   }
 
   drawParticles(context) {

@@ -2,6 +2,7 @@ import Road from './Road';
 import Battery from './Battery';
 import Obstacle from './Obstacle';
 import Bus from './Bus';
+import BatteryIndicator from './BatteryIndicator';
 import EnergyMeter from './EnergyMeter';
 import DistanceDisplay from './DistanceDisplay';
 import TitleScreen from './TitleScreen';
@@ -75,6 +76,7 @@ export default class Game {
 
     this.bus = new Bus();
     this.energyMeter = new EnergyMeter();
+    this.batteryIndicator = new BatteryIndicator();
     this.distanceDisplay = new DistanceDisplay();
     this.titleScreen = new TitleScreen();
     this.gameOverScreen = new GameOverScreen();
@@ -128,6 +130,7 @@ export default class Game {
       road.update(elapsed, this.bus.speed);
     }
 
+    this.batteryIndicator.update(this.batteries);
     this.energyMeter.update(elapsed, this.bus.energy);
     this.distanceDisplay.update(this.distance);
   }
@@ -162,6 +165,10 @@ export default class Game {
     }
 
     this.bus.drawParticles(this.context);
+
+    if (this.active) {
+      this.batteryIndicator.draw(this.context);
+    }
 
     this.energyMeter.draw(this.context);
     this.distanceDisplay.draw(this.context);

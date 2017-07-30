@@ -1,6 +1,29 @@
 (function () {
 'use strict';
 
+var images = new Map();
+
+function getImage(path) {
+  var image = images.get(path);
+
+  if (image) {
+    return image.loaded ? image : null;
+  } else {
+    image = new Image();
+    image.loaded = false;
+
+    image.addEventListener('load', function () {
+      image.loaded = true;
+    });
+
+    image.src = path;
+
+    images.set(path, image);
+
+    return getImage(path);
+  }
+}
+
 var classCallCheck = function (instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -34,7 +57,7 @@ var Road = function () {
   }
 
   createClass(Road, [{
-    key: "update",
+    key: 'update',
     value: function update(elapsed, speed) {
       this.y += elapsed * speed;
 
@@ -43,10 +66,16 @@ var Road = function () {
       }
     }
   }, {
-    key: "draw",
+    key: 'draw',
     value: function draw(context) {
-      context.fillStyle = this.color;
-      context.fillRect(0, this.y, 640, 160);
+      var image = getImage('images/road.png');
+
+      if (image) {
+        context.drawImage(image, 0, this.y);
+      } else {
+        context.fillStyle = this.color;
+        context.fillRect(0, this.y, 640, 160);
+      }
     }
   }]);
   return Road;
@@ -148,8 +177,14 @@ var Battery = function () {
   }, {
     key: 'draw',
     value: function draw(context) {
-      context.fillStyle = 'green';
-      context.fillRect(this.x, this.y, 40, 30);
+      var image = getImage('images/battery.png');
+
+      if (image) {
+        context.drawImage(image, this.x, this.y);
+      } else {
+        context.fillStyle = 'green';
+        context.fillRect(this.x, this.y, 40, 30);
+      }
     }
   }, {
     key: 'drawParticles',
@@ -193,7 +228,7 @@ var Battery = function () {
           for (var _iterator3 = this.particles[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
             var particle = _step3.value;
 
-            particle.respawn(this.x + 20, this.y + 15, 'green');
+            particle.respawn(this.x + 20, this.y + 15, 'lime');
           }
         } catch (err) {
           _didIteratorError3 = true;
@@ -211,7 +246,7 @@ var Battery = function () {
         }
       }
 
-      this.x = 50 + Math.random() * 510;
+      this.x = 90 + Math.floor(Math.random() * 5) * 105;
       this.y = -100 - Math.random() * 5000;
     }
   }]);
@@ -271,24 +306,30 @@ var Obstacle = function () {
   }, {
     key: 'draw',
     value: function draw(context) {
-      switch (this.type) {
-        case 'slowdown':
-          context.fillStyle = 'red';
-          break;
-        case 'speedup':
-          context.fillStyle = 'white';
-          break;
-        case 'freeze':
-          context.fillStyle = 'lightblue';
-          break;
-        case 'drain':
-          context.fillStyle = 'yellow';
-          break;
-        case 'energy':
-          context.fillStyle = 'blue';
-          break;
+      var image = getImage('images/' + this.type + '.png');
+
+      if (image) {
+        context.drawImage(image, this.x, this.y);
+      } else {
+        switch (this.type) {
+          case 'slowdown':
+            context.fillStyle = 'red';
+            break;
+          case 'speedup':
+            context.fillStyle = 'white';
+            break;
+          case 'freeze':
+            context.fillStyle = 'lightblue';
+            break;
+          case 'drain':
+            context.fillStyle = 'yellow';
+            break;
+          case 'energy':
+            context.fillStyle = 'blue';
+            break;
+        }
+        context.fillRect(this.x, this.y, 30, 30);
       }
-      context.fillRect(this.x, this.y, 30, 30);
     }
   }, {
     key: 'drawParticles',
@@ -370,7 +411,7 @@ var Obstacle = function () {
         }
       }
 
-      this.x = 50 + Math.random() * 510;
+      this.x = 95 + Math.floor(Math.random() * 5) * 105;
       this.y = -100 - Math.random() * 5000;
 
       var type = Math.random();
@@ -417,11 +458,11 @@ var Bus = function () {
         this.freezeTimer = 0;
 
         if (game.leftDown) {
-          this.x -= elapsed * 0.5;
+          this.x -= elapsed * 0.5 * this.speed;
         }
 
         if (game.rightDown) {
-          this.x += elapsed * 0.5;
+          this.x += elapsed * 0.5 * this.speed;
         }
       }
 
@@ -572,11 +613,23 @@ var Bus = function () {
   }, {
     key: 'draw',
     value: function draw(context) {
-      context.fillStyle = 'blue';
+      var image = void 0;
+
       if (this.freezeTimer > 0) {
-        context.fillStyle = 'lightblue';
+        image = getImage('images/frozenBus.png');
+      } else {
+        image = getImage('images/bus.png');
       }
-      context.fillRect(this.x + this.ox, this.y, 50, 130);
+
+      if (image) {
+        context.drawImage(image, this.x, this.y);
+      } else {
+        context.fillStyle = 'blue';
+        if (this.freezeTimer > 0) {
+          context.fillStyle = 'lightblue';
+        }
+        context.fillRect(this.x + this.ox, this.y, 50, 130);
+      }
     }
   }, {
     key: 'drawParticles',
@@ -619,6 +672,65 @@ var Bus = function () {
     }
   }]);
   return Bus;
+}();
+
+var BatteryIndicator = function () {
+  function BatteryIndicator() {
+    classCallCheck(this, BatteryIndicator);
+
+    this.x = 0;
+  }
+
+  createClass(BatteryIndicator, [{
+    key: 'update',
+    value: function update(batteries) {
+      var chosen = void 0;
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = batteries[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var battery = _step.value;
+
+          if (battery.y < 0) {
+            if (!chosen || chosen.y < battery.y) {
+              chosen = battery;
+            }
+          }
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      this.x = chosen.x;
+    }
+  }, {
+    key: 'draw',
+    value: function draw(context) {
+      var image = getImage('images/batteryIndicator.png');
+
+      if (image) {
+        context.drawImage(image, this.x, 0);
+      } else {
+        context.fillStyle = 'green';
+        context.fillRect(this.x, 0, 40, 30);
+      }
+    }
+  }]);
+  return BatteryIndicator;
 }();
 
 var EnergyMeter = function () {
@@ -763,9 +875,9 @@ var GameOverScreen = function () {
 
       context.font = '32px sans-serif';
       context.fillStyle = 'black';
-      context.fillText('You drove for ' + Math.floor(this.distance) + '!', 322, 202);
+      context.fillText('You drove for ' + Math.floor(this.distance) + ' meters!', 322, 202);
       context.fillStyle = 'yellow';
-      context.fillText('You drove for ' + Math.floor(this.distance) + '!', 320, 200);
+      context.fillText('You drove for ' + Math.floor(this.distance) + ' meters!', 320, 200);
 
       context.fillStyle = 'black';
       context.fillText('Press [Space] to try again.', 320, 370);
@@ -877,6 +989,7 @@ var Game = function () {
 
     this.bus = new Bus();
     this.energyMeter = new EnergyMeter();
+    this.batteryIndicator = new BatteryIndicator();
     this.distanceDisplay = new DistanceDisplay();
     this.titleScreen = new TitleScreen();
     this.gameOverScreen = new GameOverScreen();
@@ -1037,6 +1150,7 @@ var Game = function () {
         }
       }
 
+      this.batteryIndicator.update(this.batteries);
       this.energyMeter.update(elapsed, this.bus.energy);
       this.distanceDisplay.update(this.distance);
     }
@@ -1177,6 +1291,10 @@ var Game = function () {
       }
 
       this.bus.drawParticles(this.context);
+
+      if (this.active) {
+        this.batteryIndicator.draw(this.context);
+      }
 
       this.energyMeter.draw(this.context);
       this.distanceDisplay.draw(this.context);
