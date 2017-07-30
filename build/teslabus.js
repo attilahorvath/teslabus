@@ -432,6 +432,19 @@ var Obstacle = function () {
   return Obstacle;
 }();
 
+var sounds = new Map();
+
+function playSound(path) {
+  var sound = sounds.get(path);
+
+  if (sound) {
+    sound.play();
+  } else {
+    sound = new Audio(path);
+    sound.play();
+  }
+}
+
 function intersect(ax, ay, aw, ah, bx, by, bw, bh) {
          return !(ax + aw < bx || ay + ah < by || ax > bx + bw || ay > by + bh);
 }
@@ -491,6 +504,8 @@ var Bus = function () {
           if (intersect(this.x, this.y, 50, 130, battery.x, battery.y, 40, 30)) {
             this.energy += 10;
 
+            playSound('audio/battery.mp3');
+
             game.shake();
             battery.respawn(true);
           }
@@ -537,6 +552,8 @@ var Bus = function () {
                 break;
             }
 
+            playSound('audio/' + obstacle.type + '.mp3');
+
             game.shake();
             obstacle.respawn(true);
           }
@@ -577,6 +594,7 @@ var Bus = function () {
 
       if (this.energy <= 0) {
         this.energy = 0;
+        playSound('audio/gameOver.mp3');
         return false;
       }
 
@@ -715,7 +733,9 @@ var BatteryIndicator = function () {
         }
       }
 
-      this.x = chosen.x;
+      if (chosen) {
+        this.x = chosen.x;
+      }
     }
   }, {
     key: 'draw',
@@ -875,9 +895,9 @@ var GameOverScreen = function () {
 
       context.font = '32px sans-serif';
       context.fillStyle = 'black';
-      context.fillText('You drove for ' + Math.floor(this.distance) + ' meters!', 322, 202);
+      context.fillText('You drove ' + Math.floor(this.distance) + ' meters!', 322, 202);
       context.fillStyle = 'yellow';
-      context.fillText('You drove for ' + Math.floor(this.distance) + ' meters!', 320, 200);
+      context.fillText('You drove ' + Math.floor(this.distance) + ' meters!', 320, 200);
 
       context.fillStyle = 'black';
       context.fillText('Press [Space] to try again.', 320, 370);
@@ -923,6 +943,60 @@ var FpsCounter = function () {
   return FpsCounter;
 }();
 
+function preloadImages(images) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = images[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var image = _step.value;
+
+      new Image().src = image;
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+}
+
+function preloadSounds(sounds) {
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = sounds[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var sound = _step.value;
+
+      new Audio(sound);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+}
+
 var Game = function () {
   function Game() {
     var _this = this;
@@ -934,6 +1008,10 @@ var Game = function () {
     this.canvas.height = 480;
     document.body.appendChild(this.canvas);
     this.context = this.canvas.getContext('2d');
+
+    preloadImages(['images/battery.png', 'images/batteryIndicator.png', 'images/bus.png', 'images/drain.png', 'images/energy.png', 'images/freeze.png', 'images/frozenBus.png', 'images/road.png', 'images/slowdown.png', 'images/speedup.png']);
+
+    preloadSounds(['audio/battery.mp3', 'audio/drain.mp3', 'audio/energy.mp3', 'audio/freeze.mp3', 'audio/gameOver.mp3', 'audio/slowdown.mp3', 'audio/speedup.mp3', 'audio/start.mp3']);
 
     this.leftDown = false;
     this.rightDown = false;
@@ -961,9 +1039,11 @@ var Game = function () {
           if (!_this.started) {
             _this.started = true;
             _this.active = true;
+            playSound('audio/start.mp3');
           } else if (!_this.active) {
             _this.reset();
             _this.active = true;
+            playSound('audio/start.mp3');
           }
       }
     });

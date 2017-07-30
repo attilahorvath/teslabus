@@ -1,5 +1,6 @@
 import Particle from './Particle';
 import getImage from './getImage';
+import playSound from './playSound';
 import intersect from './intersect';
 
 export default class Bus {
@@ -46,6 +47,8 @@ export default class Bus {
       if (intersect(this.x, this.y, 50, 130, battery.x, battery.y, 40, 30)) {
         this.energy += 10;
 
+        playSound('audio/battery.mp3');
+
         game.shake();
         battery.respawn(true);
       }
@@ -70,6 +73,8 @@ export default class Bus {
           this.energy += 10;
           break;
         }
+
+        playSound(`audio/${obstacle.type}.mp3`);
 
         game.shake();
         obstacle.respawn(true);
@@ -99,6 +104,7 @@ export default class Bus {
 
     if (this.energy <= 0) {
       this.energy = 0;
+      playSound('audio/gameOver.mp3');
       return false;
     }
 

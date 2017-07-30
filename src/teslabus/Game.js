@@ -8,6 +8,9 @@ import DistanceDisplay from './DistanceDisplay';
 import TitleScreen from './TitleScreen';
 import GameOverScreen from './GameOverScreen';
 import FpsCounter from './FpsCounter';
+import preloadImages from './preloadImages';
+import preloadSounds from './preloadSounds';
+import playSound from './playSound';
 
 export default class Game {
   constructor() {
@@ -16,6 +19,30 @@ export default class Game {
     this.canvas.height = 480;
     document.body.appendChild(this.canvas);
     this.context = this.canvas.getContext('2d');
+
+    preloadImages([
+      'images/battery.png',
+      'images/batteryIndicator.png',
+      'images/bus.png',
+      'images/drain.png',
+      'images/energy.png',
+      'images/freeze.png',
+      'images/frozenBus.png',
+      'images/road.png',
+      'images/slowdown.png',
+      'images/speedup.png'
+    ]);
+
+    preloadSounds([
+      'audio/battery.mp3',
+      'audio/drain.mp3',
+      'audio/energy.mp3',
+      'audio/freeze.mp3',
+      'audio/gameOver.mp3',
+      'audio/slowdown.mp3',
+      'audio/speedup.mp3',
+      'audio/start.mp3'
+    ]);
 
     this.leftDown = false;
     this.rightDown = false;
@@ -43,9 +70,11 @@ export default class Game {
         if (!this.started) {
           this.started = true;
           this.active = true;
+          playSound('audio/start.mp3');
         } else if (!this.active) {
           this.reset();
           this.active = true;
+          playSound('audio/start.mp3');
         }
       }
     });

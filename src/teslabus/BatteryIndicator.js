@@ -16,7 +16,9 @@ export default class BatteryIndicator {
       }
     }
 
-    this.x = chosen.x;
+    if (chosen) {
+      this.x = chosen.x;
+    }
   }
 
   draw(context) {

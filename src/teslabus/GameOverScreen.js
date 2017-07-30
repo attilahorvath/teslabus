@@ -26,11 +26,11 @@ export default class GameOverScreen {
     context.font = '32px sans-serif';
     context.fillStyle = 'black';
     context.fillText(
-      `You drove for ${Math.floor(this.distance)} meters!`, 322, 202
+      `You drove ${Math.floor(this.distance)} meters!`, 322, 202
     );
     context.fillStyle = 'yellow';
     context.fillText(
-      `You drove for ${Math.floor(this.distance)} meters!`, 320, 200
+      `You drove ${Math.floor(this.distance)} meters!`, 320, 200
     );
 
     context.fillStyle = 'black';
